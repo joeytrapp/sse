@@ -2,8 +2,9 @@
 
 ```
 cd ruby
+gem install bundler
 bundle install
-thin -R config.ru start
+bundle exec thin -R config.ru start
 open http://localhost:3000
 ```
 
