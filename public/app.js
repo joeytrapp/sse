@@ -5,7 +5,7 @@
 
   cookies = document.cookie.split(';').reduce(function(m, i) {
     var bits = i.split('=');
-    m[bits[0].trim()] = bits[1].trim();
+    m[bits.shift().trim()] = bits.join('=').trim();
     return m;
   }, {});
 
@@ -34,7 +34,6 @@
         // data.append('csrf_token', cookies.csrf_token);
       }
       xhr.send(data);
-      debugger;
       event.preventDefault();
       event.stopPropagation();
     });
