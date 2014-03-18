@@ -1,13 +1,14 @@
 (function() {
   var source = new EventSource('/register'),
       form = document.querySelector('#form'),
-      cookies;
+      csrf, initial;
 
-  cookies = document.cookie.split(';').reduce(function(m, i) {
-    var bits = i.split('=');
-    m[bits.shift().trim()] = bits.join('=').trim();
-    return m;
-  }, {});
+  initial = new XMLHttpRequest();
+  initial.open('get', '/');
+  initial.onreadystatechange = function() {
+    csrf = this.getResponseHeader('X-Csrf-Token');
+  };
+  initial.send();
 
   source.addEventListener('chat', function(response) {
     var messages = document.querySelector('#messages'),
@@ -29,9 +30,9 @@
       data.append('message', value);
       data.append('channel', 'chat');
       xhr.open('post', '/notify', true);
-      if (cookies.csrf_token) {
-        xhr.setRequestHeader('X-Csrf-Token', cookies.csrf_token);
-        // data.append('csrf_token', cookies.csrf_token);
+      if (csrf) {
+        xhr.setRequestHeader('X-Csrf-Token', csrf);
+        // data.append('csrf_token', csrf);
       }
       xhr.send(data);
       event.preventDefault();
