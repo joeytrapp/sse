@@ -1,6 +1,13 @@
 (function() {
   var source = new EventSource('/register'),
-      form = document.querySelector('#form');
+      form = document.querySelector('#form'),
+      cookies;
+
+  cookies = document.cookie.split(';').reduce(function(m, i) {
+    var bits = i.split('=');
+    m[bits[0].trim()] = bits[1].trim();
+    return m;
+  }, {});
 
   source.addEventListener('chat', function(response) {
     var messages = document.querySelector('#messages'),
@@ -22,7 +29,12 @@
       data.append('message', value);
       data.append('channel', 'chat');
       xhr.open('post', '/notify', true);
+      if (cookies.csrf_token) {
+        xhr.setRequestHeader('X-Csrf-Token', cookies.csrf_token);
+        // data.append('csrf_token', cookies.csrf_token);
+      }
       xhr.send(data);
+      debugger;
       event.preventDefault();
       event.stopPropagation();
     });
